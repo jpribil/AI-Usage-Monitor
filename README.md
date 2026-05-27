@@ -39,13 +39,7 @@ If you use Claude Code through WSL, that is supported too. The monitor can read 
 
 ## Install
 
-Install the latest version from WinGet:
-
-```powershell
-winget install CodeZeno.ClaudeCodeUsageMonitor
-```
-
-If you prefer not to use WinGet, you can still download the latest `ai-usage-monitor.exe` from the Releases page and run it directly.
+Download the latest `ai-usage-monitor.exe` from the [Releases](https://github.com/jpribil/AI-Usage-Monitor/releases) page and run it directly.
 
 ## Use
 

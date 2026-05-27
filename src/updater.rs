@@ -18,8 +18,8 @@ const HELPER_EXE_NAME: &str = "updater-helper.exe";
 const DOWNLOAD_EXE_NAME: &str = "update-download.exe";
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 const CREATE_NEW_CONSOLE: u32 = 0x00000010;
-// Keep this aligned with the package identifier used in winget-pkgs.
-const WINGET_PACKAGE_ID: &str = "CodeZeno.ClaudeCodeUsageMonitor";
+// Keep this aligned with the package identifier used in winget-pkgs if published there.
+const WINGET_PACKAGE_ID: &str = "jpribil.AIUsageMonitor";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InstallChannel {
@@ -333,11 +333,11 @@ fn wait_for_process_exit(pid: u32, timeout: Duration) -> Result<(), String> {
 
 fn updates_dir() -> Result<PathBuf, String> {
     dirs::data_local_dir()
-        .map(|dir| dir.join("ClaudeCodeUsageMonitor").join("updates"))
+        .map(|dir| dir.join("AIUsageMonitor").join("updates"))
         .or_else(|| {
             Some(
                 std::env::temp_dir()
-                    .join("ClaudeCodeUsageMonitor")
+                    .join("AIUsageMonitor")
                     .join("updates"),
             )
         })
