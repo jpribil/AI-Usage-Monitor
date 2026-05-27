@@ -38,12 +38,8 @@ pub(super) const STRINGS: Strings = Strings {
     session_window: "5h",
     weekly_window: "7d",
     now: "今",
-    day_suffix: "日",
-    hour_suffix: "時間",
-    minute_suffix: "分",
     token_expired_title: "認証エラー",
     token_expired_body: "ターミナルで 'claude' を実行し、'/login' を使って案内に従ってください。その後、このアプリを更新するか再起動してください。",
     codex_token_expired_title: "Codex 認証エラー",
     codex_token_expired_body: "ターミナルで 'codex' を実行し、サインインの案内に従ってください。その後、このアプリを更新または再起動してください。",
-    second_suffix: "秒",
 };

@@ -1020,10 +1020,19 @@ fn is_leap(y: u64) -> bool {
     (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
 }
 
-/// Format a usage section as "X% · Yh" style text
-pub fn format_line(section: &UsageSection, strings: Strings) -> String {
+/// Format a 5-hour usage section as "X% · H:MM" style text.
+pub fn format_session_line(section: &UsageSection, strings: Strings) -> String {
+    format_line(section, strings, CountdownFormat::HoursMinutes)
+}
+
+/// Format a 7-day usage section as "X% · D:HH:MM" style text.
+pub fn format_weekly_line(section: &UsageSection, strings: Strings) -> String {
+    format_line(section, strings, CountdownFormat::DaysHoursMinutes)
+}
+
+fn format_line(section: &UsageSection, strings: Strings, countdown_format: CountdownFormat) -> String {
     let pct = format!("{:.0}%", section.percentage);
-    let cd = format_countdown(section.resets_at, strings);
+    let cd = format_countdown(section.resets_at, strings, countdown_format);
     if cd.is_empty() {
         pct
     } else {
@@ -1031,7 +1040,17 @@ pub fn format_line(section: &UsageSection, strings: Strings) -> String {
     }
 }
 
-fn format_countdown(resets_at: Option<SystemTime>, strings: Strings) -> String {
+#[derive(Clone, Copy)]
+enum CountdownFormat {
+    HoursMinutes,
+    DaysHoursMinutes,
+}
+
+fn format_countdown(
+    resets_at: Option<SystemTime>,
+    strings: Strings,
+    countdown_format: CountdownFormat,
+) -> String {
     let reset = match resets_at {
         Some(t) => t,
         None => return String::new(),
@@ -1042,7 +1061,7 @@ fn format_countdown(resets_at: Option<SystemTime>, strings: Strings) -> String {
         Err(_) => return strings.now.to_string(),
     };
 
-    format_countdown_from_secs(remaining.as_secs(), strings)
+    format_countdown_from_secs(remaining.as_secs(), countdown_format)
 }
 
 /// Calculate how long until the display text would change
@@ -1052,38 +1071,29 @@ pub fn time_until_display_change(resets_at: Option<SystemTime>) -> Option<Durati
     Some(time_until_display_change_from_secs(remaining.as_secs()))
 }
 
-fn format_countdown_from_secs(total_secs: u64, strings: Strings) -> String {
-    let total_mins = total_secs / 60;
-    let total_hours = total_secs / 3600;
-    let total_days = total_secs / 86400;
-
-    if total_days >= 1 {
-        format!("{total_days}{}", strings.day_suffix)
-    } else if total_hours >= 1 {
-        format!("{total_hours}{}", strings.hour_suffix)
-    } else if total_mins >= 1 {
-        format!("{total_mins}{}", strings.minute_suffix)
-    } else {
-        format!("{total_secs}{}", strings.second_suffix)
+fn format_countdown_from_secs(total_secs: u64, countdown_format: CountdownFormat) -> String {
+    let total_mins = total_secs.saturating_add(59) / 60;
+    match countdown_format {
+        CountdownFormat::HoursMinutes => {
+            let hours = total_mins / 60;
+            let minutes = total_mins % 60;
+            format!("{hours}:{minutes:02}")
+        }
+        CountdownFormat::DaysHoursMinutes => {
+            let days = total_mins / 1440;
+            let hours = (total_mins % 1440) / 60;
+            let minutes = total_mins % 60;
+            format!("{days}:{hours:02}:{minutes:02}")
+        }
     }
 }
 
 fn time_until_display_change_from_secs(total_secs: u64) -> Duration {
-    let total_mins = total_secs / 60;
-    let total_hours = total_secs / 3600;
-    let total_days = total_secs / 86400;
-
-    let current_bucket_start = if total_days >= 1 {
-        total_days * 86400
-    } else if total_hours >= 1 {
-        total_hours * 3600
-    } else if total_mins >= 1 {
-        total_mins * 60
+    if total_secs == 0 {
+        Duration::from_secs(1)
     } else {
-        total_secs
-    };
-
-    Duration::from_secs(total_secs.saturating_sub(current_bucket_start) + 1)
+        Duration::from_secs(((total_secs - 1) % 60) + 1)
+    }
 }
 
 /// Returns true if either section has reached "now" (reset time has passed).
