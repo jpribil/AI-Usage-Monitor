@@ -25,7 +25,7 @@ use crate::native_interop::{
 use crate::poller;
 use crate::theme;
 use crate::tray_icon;
-use crate::updater::{self, InstallChannel, ReleaseDescriptor, UpdateCheckResult};
+use crate::updater::{self, ReleaseDescriptor, UpdateCheckResult};
 
 /// Wrapper to make HWND sendable across threads (safe for PostMessage usage)
 #[derive(Clone, Copy)]
@@ -48,7 +48,6 @@ struct AppState {
     is_dark: bool,
     language_override: Option<LanguageId>,
     language: LanguageId,
-    install_channel: InstallChannel,
 
     session_percent: f64,
     session_text: String,
@@ -419,9 +418,21 @@ fn refresh_usage_texts(state: &mut AppState) {
     }
 }
 
+fn display_version() -> String {
+    let version = env!("CARGO_PKG_VERSION");
+    version
+        .strip_suffix(".0")
+        .unwrap_or(version)
+        .to_string()
+}
+
+fn app_title(strings: Strings) -> String {
+    format!("{} {}", strings.window_title, display_version())
+}
+
 fn set_window_title(hwnd: HWND, strings: Strings) {
     unsafe {
-        let title = native_interop::wide_str(strings.window_title);
+        let title = native_interop::wide_str(&app_title(strings));
         let _ = SetWindowTextW(hwnd, PCWSTR::from_raw(title.as_ptr()));
     }
 }
@@ -497,35 +508,23 @@ fn update_language_change() -> bool {
 
 fn version_action_label(
     strings: Strings,
-    language: LanguageId,
-    install_channel: InstallChannel,
     status: &UpdateStatus,
 ) -> String {
-    let current = env!("CARGO_PKG_VERSION");
+    let current = display_version();
     match status {
         UpdateStatus::Idle => format!("v{current} - {}", strings.check_for_updates),
         UpdateStatus::Checking => format!("v{current} - {}", strings.checking_for_updates),
         UpdateStatus::Applying => format!("v{current} - {}", strings.applying_update),
         UpdateStatus::UpToDate => format!("v{current} - {}", strings.up_to_date_short),
-        UpdateStatus::Available(release) => match install_channel {
-            InstallChannel::Portable => {
-                format!(
-                    "v{current} - {} v{}",
-                    strings.update_to, release.latest_version
-                )
-            }
-            InstallChannel::Winget => format!(
-                "v{current} - {} v{}",
-                localization::update_via_winget(language),
-                release.latest_version
-            ),
-        },
+        UpdateStatus::Available(release) => {
+            format!("v{current} - {} v{}", strings.update_to, release.latest_version)
+        }
     }
 }
 
 fn begin_update_check(hwnd: HWND, interactive: bool) {
     let send_hwnd = SendHwnd::from_hwnd(hwnd);
-    let (strings, install_channel) = {
+    let strings = {
         let mut state = lock_state();
         let Some(app_state) = state.as_mut() else {
             return;
@@ -546,7 +545,7 @@ fn begin_update_check(hwnd: HWND, interactive: bool) {
         }
 
         app_state.update_status = UpdateStatus::Checking;
-        (app_state.language.strings(), app_state.install_channel)
+        app_state.language.strings()
     };
 
     std::thread::spawn(move || {
@@ -579,10 +578,7 @@ fn begin_update_check(hwnd: HWND, interactive: bool) {
                 }
                 save_state_settings();
                 if interactive && show_update_prompt(hwnd, strings, &release) {
-                    match install_channel {
-                        InstallChannel::Portable => begin_update_apply(hwnd, release),
-                        InstallChannel::Winget => begin_winget_update(hwnd),
-                    }
+                    begin_update_apply(hwnd, release);
                 }
                 unsafe {
                     let _ = PostMessageW(hwnd, WM_APP_UPDATE_CHECK_COMPLETE, WPARAM(0), LPARAM(0));
@@ -654,24 +650,6 @@ fn begin_update_apply(hwnd: HWND, release: ReleaseDescriptor) {
             }
         }
     });
-}
-
-fn begin_winget_update(hwnd: HWND) {
-    let strings = {
-        let state = lock_state();
-        state.as_ref().map(|s| s.language.strings())
-    }
-    .unwrap_or(LanguageId::English.strings());
-
-    match updater::begin_winget_update() {
-        Ok(()) => unsafe {
-            let _ = PostMessageW(hwnd, WM_CLOSE, WPARAM(0), LPARAM(0));
-        },
-        Err(error) => {
-            let message = format!("{}.\n\n{}", strings.update_failed, error);
-            show_error_message(hwnd, strings.updates, &message);
-        }
-    }
 }
 
 const STARTUP_REGISTRY_PATH: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -787,8 +765,6 @@ fn set_startup_enabled(enable: bool) {
         let _ = RegCloseKey(hkey);
     }
 }
-
-const APP_TITLE: &str = "AI Usage Monitor";
 
 const TITLEBAR_H: i32 = 34;
 const CONTENT_PAD: i32 = 14;
@@ -959,12 +935,10 @@ pub fn run() {
         let settings = load_settings();
         let language_override = settings.language.as_deref().and_then(LanguageId::from_code);
         let language = localization::resolve_language(language_override);
-        let install_channel = updater::current_install_channel();
-
         // Create as a floating desktop widget. The tray icon remains available
         // for status and the context menu, but the widget is no longer embedded
         // into the Windows taskbar.
-        let title = native_interop::wide_str(language.strings().window_title);
+        let title = native_interop::wide_str(&app_title(language.strings()));
         let initial_model_count =
             active_model_count(settings.show_claude_code, settings.show_codex);
         let initial_width = total_widget_width_for(initial_model_count, settings.layout_horizontal);
@@ -1018,7 +992,6 @@ pub fn run() {
                 is_dark,
                 language_override,
                 language,
-                install_channel,
                 session_percent: 0.0,
                 session_text: "--".to_string(),
                 weekly_percent: 0.0,
@@ -1180,7 +1153,7 @@ fn paint_content(
         let old_font = SelectObject(hdc, title_font);
         draw_text(
             hdc,
-            APP_TITLE,
+            &app_title(strings),
             RECT {
                 left: sc(12),
                 top: 0,
@@ -1807,35 +1780,21 @@ unsafe extern "system" fn wnd_proc(
                     });
                 }
                 IDM_VERSION_ACTION => {
-                    let (install_channel, release) = {
+                    let release = {
                         let state = lock_state();
                         match state.as_ref() {
-                            Some(s) => (
-                                s.install_channel,
-                                match &s.update_status {
-                                    UpdateStatus::Available(release) => Some(release.clone()),
-                                    _ => None,
-                                },
-                            ),
-                            None => (InstallChannel::Portable, None),
+                            Some(s) => match &s.update_status {
+                                UpdateStatus::Available(release) => Some(release.clone()),
+                                _ => None,
+                            },
+                            None => None,
                         }
                     };
 
-                    match install_channel {
-                        InstallChannel::Winget => {
-                            if release.is_some() {
-                                begin_winget_update(hwnd);
-                            } else {
-                                begin_update_check(hwnd, true);
-                            }
-                        }
-                        InstallChannel::Portable => {
-                            if let Some(release) = release {
-                                begin_update_apply(hwnd, release);
-                            } else {
-                                begin_update_check(hwnd, true);
-                            }
-                        }
+                    if let Some(release) = release {
+                        begin_update_apply(hwnd, release);
+                    } else {
+                        begin_update_check(hwnd, true);
                     }
                 }
                 2 => {
@@ -1987,9 +1946,7 @@ fn show_context_menu(hwnd: HWND) {
         let (
             current_interval,
             strings,
-            language,
             language_override,
-            install_channel,
             update_status,
             widget_visible,
             show_claude_code,
@@ -2002,9 +1959,7 @@ fn show_context_menu(hwnd: HWND) {
                 Some(s) => (
                     s.poll_interval_ms,
                     s.language.strings(),
-                    s.language,
                     s.language_override,
-                    s.install_channel,
                     s.update_status.clone(),
                     s.widget_visible,
                     s.show_claude_code,
@@ -2015,9 +1970,7 @@ fn show_context_menu(hwnd: HWND) {
                 None => (
                     POLL_15_MIN,
                     LanguageId::English.strings(),
-                    LanguageId::English,
                     None,
-                    InstallChannel::Portable,
                     UpdateStatus::Idle,
                     true,
                     true,
@@ -2225,8 +2178,7 @@ fn show_context_menu(hwnd: HWND) {
 
         let _ = AppendMenuW(settings_menu, MF_SEPARATOR, 0, PCWSTR::null());
 
-        let version_label =
-            version_action_label(strings, language, install_channel, &update_status);
+        let version_label = version_action_label(strings, &update_status);
         let version_str = native_interop::wide_str(&version_label);
         let version_flags = if matches!(
             update_status,

@@ -1,7 +1,5 @@
 use super::Strings;
 
-pub(super) const UPDATE_VIA_WINGET_LABEL: &str = "WinGet으로 업데이트";
-
 pub(super) const STRINGS: Strings = Strings {
     window_title: "AI Usage Monitor",
     refresh: "새로고침",
