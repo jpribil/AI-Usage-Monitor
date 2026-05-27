@@ -3,7 +3,9 @@
 
 # AI Usage Monitor
 
-![Screenshot](.github/screenshot.png)
+![Stacked layout screenshot](.github/screenshot-stacked.png)
+
+![Side-by-side layout screenshot](.github/screenshot-side-by-side.png)
 
 AI Usage Monitor is a lightweight Windows floating desktop widget for people using Claude and/or ChatGPT from the command line.
 
