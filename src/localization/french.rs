@@ -3,7 +3,7 @@ use super::Strings;
 pub(super) const UPDATE_VIA_WINGET_LABEL: &str = "Mettre à jour avec WinGet";
 
 pub(super) const STRINGS: Strings = Strings {
-    window_title: "Moniteur d'utilisation Claude Code",
+    window_title: "AI Usage Monitor",
     refresh: "Actualiser",
     update_frequency: "Fréquence de mise à jour",
     one_minute: "1 minute",
@@ -12,10 +12,14 @@ pub(super) const STRINGS: Strings = Strings {
     one_hour: "1 heure",
     models: "Modeles",
     claude_code_model: "Claude Code",
-    codex_model: "Codex",
+    codex_model: "ChatGPT",
+    layout: "Layout",
+    layout_side_by_side: "Side by Side",
+    layout_stacked: "Stacked",
     settings: "Paramètres",
     start_with_windows: "Démarrer avec Windows",
     reset_position: "Réinitialiser la position",
+    always_on_top: "Toujours au premier plan",
     language: "Langue",
     system_default: "Par défaut du système",
     check_for_updates: "Vérifier les mises à jour",
@@ -41,6 +45,5 @@ pub(super) const STRINGS: Strings = Strings {
     token_expired_body: "Exécutez 'claude' dans un terminal, puis utilisez '/login' et suivez les instructions. Ensuite, actualisez ou redémarrez cette application.",
     codex_token_expired_title: "Erreur d'authentification Codex",
     codex_token_expired_body: "Executez 'codex' dans un terminal et suivez les instructions de connexion. Ensuite, actualisez ou redemarrez cette application.",
-    codex_window_title: "Moniteur d'utilisation Codex",
     second_suffix: "s",
 };

@@ -3,7 +3,7 @@ use super::Strings;
 pub(super) const UPDATE_VIA_WINGET_LABEL: &str = "WinGet으로 업데이트";
 
 pub(super) const STRINGS: Strings = Strings {
-    window_title: "Claude Code 사용량 모니터",
+    window_title: "AI Usage Monitor",
     refresh: "새로고침",
     update_frequency: "업데이트 주기",
     one_minute: "1분",
@@ -12,10 +12,14 @@ pub(super) const STRINGS: Strings = Strings {
     one_hour: "1시간",
     models: "모델",
     claude_code_model: "Claude Code",
-    codex_model: "Codex",
+    codex_model: "ChatGPT",
+    layout: "Layout",
+    layout_side_by_side: "Side by Side",
+    layout_stacked: "Stacked",
     settings: "설정",
     start_with_windows: "Windows 시작 시 자동 실행",
     reset_position: "위치 초기화",
+    always_on_top: "항상 위에 표시",
     language: "언어",
     system_default: "시스템 기본값",
     check_for_updates: "업데이트 확인",
@@ -41,6 +45,5 @@ pub(super) const STRINGS: Strings = Strings {
     token_expired_body: "터미널에서 'claude'를 실행한 다음 '/login'을 사용하고 안내에 따라 진행하세요. 그런 다음 이 앱을 새로 고치거나 다시 시작하세요.",
     codex_token_expired_title: "Codex 인증 오류",
     codex_token_expired_body: "터미널에서 'codex'를 실행하고 로그인 안내를 따르세요. 그런 다음 이 앱을 새로 고치거나 다시 시작하세요.",
-    codex_window_title: "Codex 사용량 모니터",
     second_suffix: "초",
 };

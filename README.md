@@ -1,23 +1,24 @@
 ![Windows](https://img.shields.io/badge/platform-Windows-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# Claude Code Usage Monitor
+# AI Usage Monitor
 
 ![Screenshot](.github/animation.gif)
 
-A lightweight Windows taskbar widget for people already using Claude Code, with optional Codex usage display.
+A lightweight Windows floating desktop widget for people already using Claude Code, with optional ChatGPT/Codex usage display.
 
-It sits in your taskbar and shows how much of your Claude Code and/or Codex usage window you have left, without needing to open the terminal or the provider site.
+It sits on your desktop and shows how much of your Claude and/or ChatGPT usage window you have left, without needing to open the terminal or the provider site.
 
 ## What You Get
 
 - A **5h** bar for your current 5-hour Claude usage window
 - A **7d** bar for your current 7-day window
-- Optional Codex usage bars alongside Claude Code
+- Optional ChatGPT/Codex usage bars alongside Claude
 - A live countdown until each limit resets
-- A small native widget that lives directly in the Windows taskbar
-- System tray icon badges showing your enabled model usage percentage
-- Left-click the tray icon to toggle the taskbar widget on or off
+- A small native floating widget that can be placed anywhere on the Windows desktop
+- Optional Always on Top mode
+- A single generic system tray icon
+- Double-click the tray icon to toggle the floating widget on or off
 - Right-click options for refresh, displayed models, update frequency, language, startup, and updates
 
 ## Who This Is For
@@ -44,21 +45,22 @@ Install the latest version from WinGet:
 winget install CodeZeno.ClaudeCodeUsageMonitor
 ```
 
-If you prefer not to use WinGet, you can still download the latest `claude-code-usage-monitor.exe` from the [Releases](https://github.com/CodeZeno/Claude-Code-Usage-Monitor/releases) page and run it directly.
+If you prefer not to use WinGet, you can still download the latest `ai-usage-monitor.exe` from the Releases page and run it directly.
 
 ## Use
 
 After installing with WinGet, run:
 
 ```powershell
-claude-code-usage-monitor
+ai-usage-monitor
 ```
 
-Once running, it will appear in your taskbar and as one or more tray icons in the notification area.
+Once running, it will appear as a floating desktop widget and as a tray icon in the notification area.
 
-- Drag the left divider to move the taskbar widget
-- Right-click the taskbar widget or tray icon for refresh, displayed models, update frequency, Start with Windows, reset position, language, updates, and exit
-- Left-click the tray icon to toggle the taskbar widget on or off
+- Drag the widget to move it around the desktop
+- Right-click the floating widget or tray icon for refresh, displayed models, update frequency, Start with Windows, reset position, language, updates, and exit
+- Enable `Always on Top` from the right-click Settings menu if you want it to stay above other windows
+- Double-click the tray icon to toggle the floating widget on or off
 - Enable `Start with Windows` from the right-click menu if you want it to launch automatically when you sign in
 
 ### Models
@@ -72,32 +74,26 @@ When both models are shown, each model has its own usage bar and matching usage 
 
 ### System Tray Icon
 
-The tray icon shows your current 5-hour usage as a percentage badge.
-
-If both Claude Code and Codex are enabled, the app shows two tray icons: one for Claude Code and one for Codex. If only one model is enabled, it shows one tray icon.
-
-The Claude Code tray icon uses the same warm usage colors as the Claude bar. The Codex tray icon uses a black and white badge style.
-
-Hovering over a tray icon shows the usage values for that model.
+The app shows one generic tray icon. Double-click it to show or hide the floating widget, or right-click it for the app menu.
 
 ## Diagnostics
 
 If you need to troubleshoot startup or visibility issues, run:
 
 ```powershell
-claude-code-usage-monitor --diagnose
+ai-usage-monitor --diagnose
 ```
 
 This writes a log file to:
 
 ```text
-%TEMP%\claude-code-usage-monitor.log
+%TEMP%\ai-usage-monitor.log
 ```
 
 Settings are saved to:
 
 ```text
-%APPDATA%\ClaudeCodeUsageMonitor\settings.json
+%APPDATA%\AIUsageMonitor\settings.json
 ```
 
 ## Account Support
@@ -157,7 +153,7 @@ The monitor:
 
 1. Finds your enabled model login credentials
 2. Reads your current usage from Anthropic and/or ChatGPT
-3. Shows the result directly in the Windows taskbar
+3. Shows the result in a floating Windows desktop widget
 4. Refreshes periodically in the background
 
 If the newer usage endpoint is unavailable, it can fall back to reading the rate-limit headers returned by Claude's Messages API.
