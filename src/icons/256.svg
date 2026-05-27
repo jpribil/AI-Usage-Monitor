@@ -1,25 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
-  <rect x="4" y="36" width="248" height="184" rx="16" stroke="#D97757" stroke-width="8"></rect>
-  <rect x="15" y="72" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="38" y="72" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="61" y="72" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="84" y="72" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="107" y="72" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="130" y="72" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="153" y="72" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="176" y="72" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="199" y="72" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="222" y="72" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="15" y="136" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="38" y="136" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="61" y="136" width="19" height="48" rx="4" fill="#D97757"></rect>
-  <rect x="84" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="107" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="130" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="153" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="176" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="199" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <rect x="222" y="136" width="19" height="48" rx="4" fill="#F3D6CC"></rect>
-  <path d="M 134 72 L 143 72 L 143 120 L 134 120 C 131.791 120 130 118.209 130 116 L 130 76 C 130 73.791 131.791 72 134 72 Z" fill="#D97757"></path>
-  <path d="M 88 136 L 89 136 L 89 184 L 88 184 C 85.791 184 84 182.209 84 180 L 84 140 C 84 137.791 85.791 136 88 136 Z" fill="#D97757"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="35" y1="24" x2="221" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#242629"/>
+      <stop offset="1" stop-color="#090a0c"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <rect x="13" y="13" width="230" height="230" rx="50" fill="url(#bg)" stroke="#666b72" stroke-width="3"/>
+  <g filter="url(#shadow)">
+    <path d="M55 173a78 78 0 0 1 146 0" fill="none" stroke="#202020" stroke-width="35" stroke-linecap="round"/>
+    <path d="M55 173a78 78 0 0 1 20-51" fill="none" stroke="#57d94b" stroke-width="35" stroke-linecap="round"/>
+    <path d="M75 122a78 78 0 0 1 53-27" fill="none" stroke="#f8d332" stroke-width="35" stroke-linecap="round"/>
+    <path d="M128 95a78 78 0 0 1 73 78" fill="none" stroke="#f2553f" stroke-width="35" stroke-linecap="round"/>
+    <path d="M125 148 184 95" stroke="#f4f6f8" stroke-width="23" stroke-linecap="round"/>
+    <circle cx="125" cy="148" r="22" fill="#171a1e" stroke="#8d98a6" stroke-width="5"/>
+    <path d="M128 166 140 191 165 203 140 215 128 240 116 215 91 203 116 191Z" fill="#f7fbff"/>
+    <path d="M79 214 105 235M177 214 151 235" stroke="#7aa9ff" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="75" cy="211" r="10" fill="#a9bacd"/>
+    <circle cx="181" cy="211" r="10" fill="#a9bacd"/>
+  </g>
 </svg>

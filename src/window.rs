@@ -1149,13 +1149,14 @@ fn paint_content(
         draw_bottom_border(hdc, sc(TITLEBAR_H), width, &border);
 
         let _ = SetBkMode(hdc, TRANSPARENT);
+        draw_titlebar_icon(hdc);
         let title_font = create_app_font(sc(-14), FW_SEMIBOLD.0 as i32);
         let old_font = SelectObject(hdc, title_font);
         draw_text(
             hdc,
             &app_title(strings),
             RECT {
-                left: sc(12),
+                left: sc(36),
                 top: 0,
                 right: width - sc(42),
                 bottom: sc(TITLEBAR_H),
@@ -2339,6 +2340,37 @@ fn close_button_rect(width: i32) -> RECT {
         top: (sc(TITLEBAR_H) - size) / 2,
         right: width - sc(8),
         bottom: (sc(TITLEBAR_H) - size) / 2 + size,
+    }
+}
+
+fn draw_titlebar_icon(hdc: HDC) {
+    unsafe {
+        let (large_icon, small_icon) = load_embedded_app_icons();
+        if small_icon.is_invalid() {
+            if !large_icon.is_invalid() {
+                let _ = DestroyIcon(large_icon);
+            }
+            return;
+        }
+
+        let size = sc(18);
+        let x = sc(10);
+        let y = (sc(TITLEBAR_H) - size) / 2;
+        let _ = DrawIconEx(
+            hdc,
+            x,
+            y,
+            small_icon,
+            size,
+            size,
+            0,
+            HBRUSH::default(),
+            DI_NORMAL,
+        );
+        if !large_icon.is_invalid() {
+            let _ = DestroyIcon(large_icon);
+        }
+        let _ = DestroyIcon(small_icon);
     }
 }
 
